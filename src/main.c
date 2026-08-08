@@ -6,9 +6,9 @@
 #define BUFFER_SIZE 1024
 
 int main(int argc, char *argv[]) {
-    FILE *input = stdin;  // Default: read from stdin
+    FILE *input = stdin; 
     
-    // If a filename is provided, open it
+    
     if (argc > 1) {
         input = fopen(argv[1], "r");
         if (input == NULL) {
@@ -17,8 +17,8 @@ int main(int argc, char *argv[]) {
         }
     }
     
-    // Process the input
-    Statistics stats = {0, 0, 0, 0};  // Initialize to zero
+    
+    Statistics stats = {0, 0, 0, 0};  
     char buffer[BUFFER_SIZE];
     
     while (fgets(buffer, sizeof(buffer), input) != NULL) {
