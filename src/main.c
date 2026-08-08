@@ -1,43 +1,44 @@
-/*
- ============================================================================
- Name        : Text-Stats
- Author      : Abdullah Abdelaziz
- Version     :
- Copyright   : MIT License
- Description : Parse Text and give stats
- ============================================================================
- */
-
-
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include "stats.h"
 
-int main(int argc, char const *argv[])
-{
-    FILE *input_file = NULL;
-    char buffer[100];
+#define BUFFER_SIZE 1024
 
-    if(argc > 1){
-        input_file = fopen(argv[1], "r");
-
-        if(!input_file){
-            perror("error opening file");
-            return 1;
+int main(int argc, char *argv[]) {
+    FILE *input = stdin;  // Default: read from stdin
+    
+    // If a filename is provided, open it
+    if (argc > 1) {
+        input = fopen(argv[1], "r");
+        if (input == NULL) {
+            perror("Error opening file");
+            return EXIT_FAILURE;
         }
     }
-
-    int i = 0;
-    while (fgets(buffer, 100, input_file)) {
-        i++;
-        printf("%d: %s", i, buffer);
+    
+    // Process the input
+    Statistics stats = {0, 0, 0, 0};  // Initialize to zero
+    char buffer[BUFFER_SIZE];
+    
+    while (fgets(buffer, sizeof(buffer), input) != NULL) {
+        // Remove trailing newline for counting (but keep it for line count)
+        size_t len = strlen(buffer);
+        if (len > 0 && buffer[len - 1] == '\n') {
+            buffer[len - 1] = '\0';
+        }
+        
+        // Update statistics for this line
+        update_stats(buffer, &stats);
     }
-
-
-
-
-
-    return 0;
+    
+    // Print results
+    print_stats(&stats);
+    
+    // Clean up
+    if (input != stdin) {
+        fclose(input);
+    }
+    
+    return EXIT_SUCCESS;
 }
-
-
-

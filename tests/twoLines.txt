@@ -1,1 +1,3 @@
-Hello, world\nI am New HERE.
+Hello, world!
+I am New HERE.
+I want to learn c language.
