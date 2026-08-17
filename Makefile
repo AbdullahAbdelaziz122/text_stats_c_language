@@ -1,11 +1,12 @@
 # Compiler and flags
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -std=c99 -g -I./src
+CFLAGS = -Wall -Wextra -Werror -std=c99 -g -I./src -I./include
 LDFLAGS =
 
 # Directories
 SRC_DIR = src
 BUILD_DIR = build
+INCLUDE_DIR = include
 
 # find all .c files in SRC_DIR
 SOURCES = $(wildcard $(SRC_DIR)/*.c)
@@ -23,7 +24,7 @@ all: $(BUILD_DIR) $(TARGET)
 $(BUILD_DIR):
 	mkdir -p $@
 
-# Link: build/%.o -> calc
+# Link: build/%.o -> stat
 $(TARGET): $(OBJECTS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
