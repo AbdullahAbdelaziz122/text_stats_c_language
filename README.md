@@ -1,174 +1,243 @@
+
 # Text Statistics Tool
 
-## 1. Overview
-
-**Purpose**  
-Build a command-line utility that reads text from a file or standard input and computes various statistics. This teaches you how to manipulate strings efficiently, handle files, and build a modular data-processing pipeline.
-
-**Real-World Applications**  
-- **Log analysis** – counting error occurrences, frequency of specific events.
-- **Configuration parsing** – extracting key-value pairs, counting sections.
-- **Data preprocessing** – cleaning and analyzing text data before feeding it to an embedded system.
-- **Resource-constrained systems** – implementing efficient string operations without relying on heavy libraries.
-
-**What Employers Expect**  
-- Ability to process large text files efficiently (memory and time).
-- Understanding of string manipulation in C (pointer arithmetic, null-termination).
-- Experience with hash tables or sorting algorithms for frequency analysis.
-- Clean argument parsing using `argc`/`argv`.
-- Modular design that separates file I/O, statistics computation, and output formatting.
+A command‑line text statistics utility written in **C99**.  
+Reads from a file or standard input and computes character, word, line, and sentence counts, plus word‑frequency analysis.
 
 ---
 
-## 2. Functional Requirements
+## Features
 
-Your program shall:
+- Character, word, line, and sentence counting
+- Word‑frequency analysis with sorting:
+  - descending frequency
+  - alphabetical order for ties
+- Case‑insensitive counting (optional, can be enabled)
+- Read from file or standard input
+- Robust error handling (missing files, empty input, etc.)
+- Modular C source/header organisation
+- Support for multiple input files (optional, extendable)
+- Multiple input files
+- Case‑insensitive counting (already implemented as optional)
+---
 
-1. **Accept input from:**
-   - Standard input (if no file is specified).
-   - A file specified as a command-line argument (e.g., `./text_stats file.txt`).
+## Requirements
 
-2. **Compute and print:**
-   - **Character count** (including spaces, excluding the null terminator).
-   - **Word count** – words are sequences of alphanumeric characters (a-z, A-Z, 0-9). Hyphens and apostrophes inside words may be handled as part of the word, but for simplicity, treat any non-alphanumeric as a delimiter.
-   - **Line count** – count lines (including empty lines).
-   - **Sentence count** – sentences end with `.`, `!`, or `?` (handle abbreviations carefully, or simplify for now).
-   - **Word frequency** – list each unique word and how many times it appears, sorted by frequency (descending) and alphabetically (ascending) for ties.
+- C compiler with **C99** support (GCC recommended)
+- GNU Make
 
-3. **Format output clearly**, e.g.:
-   ```
-   Characters: 123
-   Words: 45
-   Lines: 6
-   Sentences: 3
-   Top 10 most frequent words:
-   the   : 12
-   and   : 8
-   to    : 5
-   ...
-   ```
+On Debian/Ubuntu:
 
-4. **Handle errors gracefully:**
-   - File not found → print error and exit.
-   - Empty file → print all counts as zero.
-   - Too many arguments → print usage message.
+```bash
+sudo apt install build-essential
+```
 
 ---
 
-## 3. Optional Stretch Features
+## Building
 
-1. **Multiple file support** – accept multiple files and print statistics for each.
-2. **Case-insensitive counting** – treat "The" and "the" as the same word.
-3. **Stop word filter** – ignore common words (e.g., "the", "and", "is") from frequency output.
-4. **Output formats** – support `--json` or `--csv` for structured output.
-5. **Longest word** – print the longest word and its length.
-6. **Average word length** – compute and display.
-7. **Parallel processing** – for very large files, use threads to process chunks (stretch goal for later).
-8. **Interactive mode** – if no file is provided, prompt the user for text input.
+Clone the repository:
 
----
+```bash
+git clone git@github.com:AbdullahAbdelaziz122/text_stats_c_language.git
+cd text_stats
+```
 
-## 4. Constraints
+Build with:
 
-**Allowed:**
-- `<stdio.h>`, `<stdlib.h>`, `<string.h>`, `<ctype.h>`, `<stdbool.h>`, `<stdint.h>`, `<limits.h>`, `<errno.h>`.
+```bash
+make
+```
 
-**Forbidden (initially):**
-- External libraries (no `regex`, no `sqlite`, no `ncurses`, no `libxml`).
-- `strtok()` – you must implement your own tokenization to learn string handling.
-- `scanf()` for reading files (use `fgets()` or `fread()`).
-- Global variables (except for debugging flags).
-
-**Memory:**
-- You may use dynamic allocation (`malloc`/`free`) for storing words and their frequencies.
-- For large files (e.g., > 100 MB), consider a streaming approach instead of loading the whole file into memory.
+The executable `stat` will be created in the project root.
 
 ---
 
-## 5. Project Structure
+## Usage
+
+```bash
+./stat [FILE]
+```
+
+| Argument | Description               |
+|----------|---------------------------|
+| `FILE`   | Input text file           |
+| (none)   | Read from standard input  |
+
+### Examples
+
+**From a file:**
+
+```bash
+./stat example.txt
+```
+
+**From standard input:**
+
+```bash
+echo "hello world" | ./stat
+```
+
+or
+
+```bash
+cat file.txt | ./stat
+```
+
+---
+
+## Output Example
+
+```
+Characters: 123
+Words: 45
+Lines: 6
+Sentences: 3
+
+Top 10 most frequent words:
+-----------------------------
+the   : 12
+and   : 8
+to    : 5
+```
+
+---
+
+## Project Structure
 
 ```
 text_stats/
+├── include/
+│   ├── stats.h          # Counting function prototypes
+│   ├── word_freq.h      # Frequency structures & prototypes
+│   └── utils.h          # Shared helpers
 ├── src/
-│   ├── main.c          – Argument parsing, orchestration, output
-│   ├── stats.c/h       – Compute character, word, line, sentence counts
-│   ├── word_freq.c/h   – Word frequency tracking (insert, update, sort, print)
-│   ├── tokenizer.c/h   – Custom tokenizer (split text into words)
-│   ├── utils.c/h       – Helper functions (trim, case-insensitive compare, etc.)
-│   └── file_reader.c/h – Read file or stdin, chunking logic
-├── tests/
-│   ├── empty.txt
-│   ├── one_word.txt
-│   ├── lorem_ipsum.txt
+│   ├── main.c           # Argument parsing, I/O, orchestration
+│   ├── stats.c          # Character, word, line, sentence counting
+│   ├── word_freq.c      # Frequency tracking, sorting, printing
+│   └── utils.c          # Utility functions
+├── tests/               # Test input files
 │   ├── mixed_case.txt
-│   └── punctuation.txt
+│   ├── test_full.txt
+│   └── test_empty.txt
+├── build/               # Object files (generated)
 ├── Makefile
-└── README.md
+├── README.md
+└── LICENSE
 ```
 
 ---
 
-## 6. Development Milestones
+## Development Guidelines
 
-| Milestone | Objective |
-|-----------|-----------|
-| **1** | Accept input from `stdin` and a file (via `argc`/`argv`). Read the entire file or stream into a buffer. Print the text to verify. Handle file-not-found errors. |
-| **2** | Implement basic counting: characters, words, lines, sentences. Use a simple state machine for word detection (traverse characters, update counts). Print results. |
-| **3** | Implement word frequency: tokenize text into words, store in a dynamic array or hash table. Count frequencies. Print the top 10 words. |
-| **4** | Sort the word frequency list (by count descending, then alphabetically). Print all unique words or a configurable top N. |
-| **5** | Add case-insensitive support. Add stop word filter (optional). Improve error handling and edge cases (empty file, huge file). |
-| **6** | Refactor into modules. Add a simple test script to verify output against known inputs. Polish README. |
+### Compiler Flags
 
----
+The project is built with:
 
-## 7. Test Cases
+```text
+-Wall -Wextra -Werror -std=c99
+```
 
-| Input | Expected Output (partial) |
-|-------|---------------------------|
-| `"hello world"` (stdin) | Characters: 11, Words: 2, Lines: 1, Sentences: 1 (or 0 if no punctuation) |
-| `"one two three two one"` | Word freq: one:2, two:2, three:1 |
-| Empty file | All counts zero, no frequency list |
-| File with 1000-line text | Counts match `wc -l`, `wc -w`, `wc -c` |
-| `"Hello, world!"` | Words: "Hello" and "world" (punctuation stripped) |
-| `"The... cat and dog."` | Words: "The", "cat", "and", "dog" (treat "..." as delimiter) |
-| Mixed case: `"Apple apple APPLE"` (case-insensitive) | `apple: 3` (if implemented) |
-| Very long file (e.g., 100 MB) | Must not crash; memory usage bounded |
+Warnings are treated as errors.
 
-**Edge Cases:**
-- Multiple spaces, tabs, newlines.
-- Words with apostrophes: `"don't"` – decide whether to treat as one word or split.
-- Numbers: `"100"` – treat as a word? (Yes, alphanumeric).
-- Files with no newline at the end.
-- File with only punctuation.
+### Memory Management
 
----
+All dynamically allocated memory (`malloc`, `calloc`, `realloc`) must be freed.  
+The code should be tested for leaks, double frees, use‑after‑free, and buffer overflows.
 
-## 8. Common Beginner Mistakes
+### Debugging
 
-1. **Using `feof()` incorrectly** – often leads to double-reading or missing last line. Use `fgets()` return value directly.
-2. **Not handling `\r` (Windows CRLF)** – treat `\r` as whitespace.
-3. **Memory leaks** – forgetting to `free()` dynamically allocated word entries.
-4. **Tokenization bugs** – not skipping delimiters properly, or including delimiters in words.
-5. **Case sensitivity** – forgetting to `tolower()` when counting frequencies.
-6. **Off-by-one errors** – line count, null-terminator handling.
-7. **Inefficient sorting** – using bubble sort on tens of thousands of words; use `qsort()` from `<stdlib.h>`.
-8. **Not handling long lines** – `fgets()` with a fixed buffer may truncate; handle partial lines.
-9. **Using `strstr()` or `strchr()` incorrectly** – returning pointers without bounds checking.
-10. **Ignoring `EOF` conditions** – reading beyond the end of file.
+A debug build includes `-g`. Example:
 
----
+```bash
+make clean
+make CFLAGS="-Wall -Wextra -Werror -std=c99 -g"
+```
 
-### 9. Engineering Best Practices
+Then use GDB:
 
-- **Modularity** – separate concerns: file reading, tokenization, counting, frequency tracking, and output.
-- **Use `static` functions** for internal helpers within a module.
-- **Use `const`** for input parameters that are not modified.
-- **Error codes** – return meaningful error codes from functions; handle in `main()`.
-- **Memory management** – always pair `malloc` with `free`. Use tools like Valgrind to check leaks.
-- **Efficiency** – process text in chunks (streaming) rather than loading entire file if possible.
-- **Portability** – handle Windows and Unix line endings; use `size_t` for sizes.
-- **Clear output** – format statistics in a human-readable way.
-- **Documentation** – each public function should have a comment describing its purpose, parameters, and return values.
+```bash
+gdb ./stat
+```
+
+### Sanitizers
+
+**AddressSanitizer** (memory errors):
+
+```bash
+make clean
+make CFLAGS="-Wall -Wextra -Werror -std=c99 -g -fsanitize=address"
+./stat tests/test_full.txt
+```
+
+**UndefinedBehaviorSanitizer**:
+
+```bash
+make clean
+make CFLAGS="-Wall -Wextra -Werror -std=c99 -g -fsanitize=undefined"
+./stat tests/test_full.txt
+```
 
 ---
 
+## Testing
+
+Run against various inputs to verify correctness.  
+Example test cases:
+
+| Input                             | Expected Result                                           |
+|-----------------------------------|-----------------------------------------------------------|
+| `"hello world"`                   | 11 characters, 2 words                                    |
+| `"one two three two one"`         | `one:2`, `two:2`, `three:1`                               |
+| Empty file                        | all counts zero                                           |
+| `"Hello, world!"`                 | 2 words (`Hello`, `world`)                                |
+| `"The... cat and dog."`           | 4 words (`The`, `cat`, `and`, `dog`)                      |
+| `"Apple apple APPLE"`             | `apple:3` (case‑insensitive)                              |
+| Very large file                   | no crashes, bounded memory usage                          |
+
+Edge cases to consider:
+
+- Multiple spaces, tabs, newlines
+- Files without final newline
+- Only punctuation or whitespace
+- Very long words / large files
+- Numbers mixed with letters
+- Permission‑denied files
+
+For reference, compare with standard Unix tools:
+
+```bash
+wc -c file.txt
+wc -w file.txt
+wc -l file.txt
+```
+
+> Note: `wc -w` may define words differently; discrepancies are not necessarily bugs.
+
+---
+
+## Optional Stretch Features
+
+After core functionality is stable, you may consider adding:
+
+- Stop‑word filtering
+- JSON / CSV output
+- Longest word and average word length
+- Interactive mode
+- Parallel processing for very large files
+
+---
+
+## License
+
+This project is distributed under the **MIT License**.  
+See [`LICENSE`](LICENSE) for details.
+
+---
+
+## Author
+
+**Abdullah Abdelaziz**  
+GitHub: [AbdullahAbdelaziz122](https://github.com/AbdullahAbdelaziz122)
+
+---
