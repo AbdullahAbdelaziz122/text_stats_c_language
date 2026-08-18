@@ -22,6 +22,9 @@ int main(int argc, char *argv[]) {
     Statistics stats = {0, 0, 0, 0};  
     char buffer[BUFFER_SIZE];
     
+	WordFrequency wf;
+	init_word_frequency(&wf);
+	
     while (fgets(buffer, sizeof(buffer), input) != NULL) {
         // Remove trailing newline for counting (but keep it for line count)
         size_t len = strlen(buffer);
@@ -31,22 +34,26 @@ int main(int argc, char *argv[]) {
         
         // Update statistics for this line
         update_stats(buffer, &stats);
+		
+		// Tokenize and add words
+		char *token = strtok(buffer, " .,!?;:\t\n");
+		while(token != NULL){
+			add_word(&wf, token);
+			token = strtok(NULL, " .,!?;:\t\n");
+
+		}
     }
     
     // Print results
     print_stats(&stats);
-    
+	// Sort and print word frequencies
+    sort_word_frequency(&wf);
+    print_top_words(&wf, 10);
+	 
     // Clean up
     if (input != stdin) {
         fclose(input);
     }
-	
-	
-
-
-	
-    
-	
 
     return EXIT_SUCCESS;
 }

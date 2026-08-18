@@ -49,3 +49,58 @@ void add_word(WordFrequency *wf,const char *word){
 	
 	
 }
+
+
+static int compare_entries(const void* a, const void* b){
+	const WordEntry *entry_a = (const WordEntry*)a;
+	const WordEntry *entry_b = (const WordEntry*)b;
+	
+	// sort by count
+	if(entry_b->count != entry_a->count){
+		return entry_b->count - entry_a->count;
+	}
+	
+	// if counts equal sort alphabetically
+	return strcmp(entry_a->word, entry_b->word);
+}
+
+
+
+void sort_word_frequency(WordFrequency *wf){
+	if(wf->count > 0){
+		qsort(wf->entries, wf->count, sizeof(WordEntry), compare_entries);
+	}
+	
+}
+
+
+void print_top_words(const WordFrequency *wf, unsigned int top_n){
+	
+	if(wf->count == 0){
+		printf("No Words found.\n");
+		return;
+	}
+	
+	
+	printf("\nTop %d most frequent words:\n", top_n);
+	    printf("-----------------------------\n");
+	    
+	    int limit = (top_n < wf->count) ? top_n : wf->count;
+	    for (int i = 0; i < limit; i++) {
+	        printf("%4d: %-15s %d\n", i + 1, wf->entries[i].word, wf->entries[i].count);
+	    }
+	
+	
+}
+
+
+void free_word_frequency(WordFrequency *wf){
+	for (unsigned int i = 0; i <wf->count; i++) {
+		free(wf->entries[i].word);
+	}
+	free(wf->entries);
+	wf->entries = NULL;
+	wf->count = 0;
+	wf->capacity =0;
+	
+}
