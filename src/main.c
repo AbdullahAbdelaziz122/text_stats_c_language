@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "stats.h"
-
+#include <word_freq.h>
 #define BUFFER_SIZE 1024
 
 int main(int argc, char *argv[]) {
@@ -40,6 +40,33 @@ int main(int argc, char *argv[]) {
     if (input != stdin) {
         fclose(input);
     }
+	
+	
+
+
+	
     
+	
+
     return EXIT_SUCCESS;
 }
+
+
+
+// Testing add word function 
+//int main(){
+//	
+//	
+//	WordFrequency wf;
+//	
+//	init_word_frequency(&wf);
+//	
+//	add_word(&wf, "hello");
+//	add_word(&wf, "world");
+//	add_word(&wf, "hello");
+//
+//	printf("Count: %d\n", wf.count);  // Should be 2 (hello, world)
+//	printf("hello count: %d\n", wf.entries[0].count);  // Should be 2
+//	printf("world count: %d\n", wf.entries[1].count);  // Should be 1
+//	
+//}
