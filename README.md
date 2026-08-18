@@ -114,8 +114,8 @@ text_stats/
 ├── src/
 │   ├── main.c           # Argument parsing, I/O, orchestration
 │   ├── stats.c          # Character, word, line, sentence counting
-│   ├── word_freq.c      # Frequency tracking, sorting, printing
-│   └── utils.c          # Utility functions
+│   └── word_freq.c      # Frequency tracking, sorting, printing
+│    
 ├── tests/               # Test input files
 │   ├── mixed_case.txt
 │   ├── test_full.txt
